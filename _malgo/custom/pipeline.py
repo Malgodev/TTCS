@@ -4,6 +4,7 @@ import numpy as np
 from mmcv.transforms import TRANSFORMS, BaseTransform, to_tensor
 from mmaction.structures import ActionDataSample
 
+
 @TRANSFORMS.register_module()
 class VideoInit(BaseTransform):
     def transform(self, results):

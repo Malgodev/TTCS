@@ -24,4 +24,3 @@ class DataPreprocessorZelda(BaseDataPreprocessor):
         batch_inputs = (batch_inputs - self.mean) / self.std  # Normalization
         data['inputs'] = batch_inputs
         return data
-    
