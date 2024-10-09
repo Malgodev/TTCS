@@ -201,3 +201,19 @@ print(acc)
 
 
 # Test with MMEngine
+from mmengine.runner import Runner
+
+train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=10, val_interval=1)
+val_cfg = dict(type='ValLoop')
+
+optim_wrapper = dict(optimizer=dict(type='Adam', lr=0.01))
+
+runner = Runner(model=model_cfg, work_dir='./work_dirs/guide',
+                train_dataloader=train_dataloader_cfg,
+                train_cfg=train_cfg,
+                val_dataloader=val_dataloader_cfg,
+                val_cfg=val_cfg,
+                optim_wrapper=optim_wrapper,
+                val_evaluator=[metric_cfg],
+                default_scope='mmaction')
+runner.train()
