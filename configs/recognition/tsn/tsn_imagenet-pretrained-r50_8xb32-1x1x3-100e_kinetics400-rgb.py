@@ -113,7 +113,3 @@ model = dict(
 #       or not by default.
 #   - `base_batch_size` = (8 GPUs) x (32 samples per GPU).
 auto_scale_lr = dict(enable=False, base_batch_size=32)
-
-
-
-# python tools/visualizations/browse_dataset.py configs/recognition/tsn/tsn_imagenet-pretrained-r50_8xb32-1x1x3-100e_kinetics400-rgb.py browse_out --mode pipeline
