@@ -12,7 +12,7 @@ model = dict(  # Config of the model
         in_channels=2048,  # The input channels of classification head.
         spatial_type='avg',  # Type of pooling in spatial dimension
         consensus=dict(type='AvgConsensus', dim=1),  # Config of consensus module
-        dropout_ratio=0.4,  # Probability in dropout layer
+        dropout_ratio=0.4,  # Probability in dropout layer  
         init_std=0.01, # Std value for linear layer initiation
         average_clips='prob'),  # Method to average multiple clip results
     data_preprocessor=dict(  # Dict for data preprocessor
