@@ -1,0 +1,1 @@
+# python demo/demo_inferencer.py  demo/demo.mp4 --rec tsn --print-result --label-file tools/data/kinetics/label_map_k400.txt

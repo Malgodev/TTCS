@@ -2,10 +2,10 @@ _base_ = ['tsn_imagenet-pretrained-r50_8xb32-1x1x3-100e_kinetics400-rgb.py']
 
 # dataset settings
 dataset_type = 'VideoDataset'
-data_root = 'data/kinetics400/videos_train'
-data_root_val = 'data/kinetics400/videos_val'
-ann_file_train = 'data/kinetics400/kinetics400_train_list_videos.txt'
-ann_file_val = 'data/kinetics400/kinetics400_val_list_videos.txt'
+data_root = 'data/kinetics400_tiny/train'
+data_root_val = 'data/kinetics400_tiny/val'
+ann_file_train = 'data/kinetics400_tiny/kinetics_tiny_train_video.txt'
+ann_file_val = 'data/kinetics400_tiny/kinetics_tiny_val_video.txt'
 
 file_client_args = dict(io_backend='disk')
 
@@ -41,7 +41,7 @@ val_pipeline = [
 ]
 
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=4,
     num_workers=8,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -51,7 +51,7 @@ train_dataloader = dict(
         data_prefix=dict(video=data_root),
         pipeline=train_pipeline))
 val_dataloader = dict(
-    batch_size=32,
+    batch_size=4,
     num_workers=8,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=False),
