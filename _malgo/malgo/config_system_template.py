@@ -25,12 +25,12 @@ model = dict(  # Config of the model
     test_cfg=None)  # Config for testing hyperparameters for TSN.
 
 # dataset settings
-dataset_type = 'RawframeDataset'  # Type of dataset for training, validation and testing
-data_root = 'data/kinetics400/rawframes_train/'  # Root path to data for training
-data_root_val = 'data/kinetics400/rawframes_val/'  # Root path to data for validation and testing
-ann_file_train = 'data/kinetics400/kinetics400_train_list_rawframes.txt'  # Path to the annotation file for training
-ann_file_val = 'data/kinetics400/kinetics400_val_list_rawframes.txt'  # Path to the annotation file for validation
-ann_file_test = 'data/kinetics400/kinetics400_val_list_rawframes.txt'  # Path to the annotation file for testing
+dataset_type = 'VideoDataset'  # Type of dataset for training, validation and testing
+data_root = 'data/kinetics400_tiny/train/'  # Root path to data for training
+data_root_val = 'data/kinetics400_tiny/val/'  # Root path to data for validation and testing
+ann_file_train = 'data/kinetics400_tiny/kinetics400_tiny_train_list_rawframes.txt'  # Path to the annotation file for training
+ann_file_val = 'data/kinetics400_tiny/kinetics400_tiny_val_list_rawframes.txt'  # Path to the annotation file for validation
+ann_file_test = 'data/kinetics400_tiny/kinetics400_tiny_val_list_rawframes.txt'  # Path to the annotation file for testing
 
 train_pipeline = [  # Training data processing pipeline
     dict(  # Config of SampleFrames
