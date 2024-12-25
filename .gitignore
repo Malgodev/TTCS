@@ -150,3 +150,5 @@ mmaction/tools/*
 !projects/stad_tutorial/*.ipynb
 mmaction/.mim
 
+# ignore mp4 file
+*.mp4
