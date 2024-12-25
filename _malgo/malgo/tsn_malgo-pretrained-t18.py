@@ -1,9 +1,11 @@
-ann_file_train = 'data/kinetics400/kinetics400_train_list_videos.txt'
-ann_file_val = 'data/kinetics400/kinetics400_val_list_videos.txt'
+ann_file_train = 'data/malgo/malgo_train_video.txt'
+ann_file_val = 'data/malgo/malgo_val_video.txt'
 auto_scale_lr = dict(base_batch_size=256, enable=False)
-data_root = 'data/kinetics400/videos_train'
-data_root_val = 'data/kinetics400/videos_val'
+data_root_train = 'data/malgo/malgo_train'
+data_root_val = 'data/malgo/malgo_val'
 dataset_type = 'VideoDataset'
+
+
 default_hooks = dict(
     checkpoint=dict(
         interval=3, max_keep_ckpts=3, save_best='auto', type='CheckpointHook'),
@@ -13,69 +15,78 @@ default_hooks = dict(
     sampler_seed=dict(type='DistSamplerSeedHook'),
     sync_buffers=dict(type='SyncBuffersHook'),
     timer=dict(type='IterTimerHook'))
-default_scope = 'mmaction'
+
+default_scope = 'mmaction' #
+
 env_cfg = dict(
     cudnn_benchmark=False,
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+
 file_client_args = dict(io_backend='disk')
-load_from = None
+load_from = None # sẽ thêm ở đây
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=20)
+
 model = dict(
+    type='Recognizer2D',
     backbone=dict(
-        depth=50,
-        norm_eval=False,
-        pretrained='https://download.pytorch.org/models/resnet50-11ad3fa6.pth',
-        type='ResNet'),
+        type='ResNet',  # Sử dụng ResNet
+        pretrained='torchvision://resnet50',  # Sử dụng trọng số đã được huấn luyện từ ResNet-18
+        depth=50,  # Độ sâu của ResNet
+        norm_eval=False
+    ),
     cls_head=dict(
-        average_clips='prob',
-        consensus=dict(dim=1, type='AvgConsensus'),
-        dropout_ratio=0.4,
-        in_channels=2048,
-        init_std=0.01,
-        num_classes=400,
-        spatial_type='avg',
-        type='TSNHead'),
-    data_preprocessor=dict(
-        format_shape='NCHW',
-        mean=[
-            123.675,
-            116.28,
-            103.53,
-        ],
-        std=[
-            58.395,
-            57.12,
-            57.375,
-        ],
-        type='ActionDataPreprocessor'),
+        type='TSNHead',  # Model sử dụng
+        num_classes=4,  # Số lượng action classes (tấn công, đỡ, nhảy, ...)
+        in_channels=2048,  # Số lượng channels, tương ứng với depth = 18
+        spatial_type='avg',  # Lấy trung bình pooling
+        consensus=dict(type='AvgConsensus', dim=1),  # Cấu hình của Consensus module
+        dropout_ratio=0.5,  # Tỉ lệ bỏ một số nơ-ron trong quá trình train, tránh overfitting
+        init_std=0.01,  # Standard deviation khởi tạo, có trọng số là 0.01
+        average_clips='prob'  # Trung bình có trọng số theo xác suất
+    ),
+    data_preprocessor=dict(  # Tiền xử lý dữ liệu
+        type='ActionDataPreprocessor',  # Loại
+        mean=[123.675, 116.28, 103.53],  # Giá trị trung bình của RGB chuẩn hóa dữ liệu đầu vào
+        std=[58.395, 57.12, 57.375],  # Độ lệch chuẩn của RGB để chuẩn hóa
+        format_shape='NCHW'  # Định dạng sau xử lý trong đó
+        # N: Batch size
+        # C: Channels (RGB in this case)
+        # H: Height
+        # W: Width
+    ),
     test_cfg=None,
-    train_cfg=None,
-    type='Recognizer2D')
+    train_cfg=None)
 
 optim_wrapper = dict(
     clip_grad=dict(max_norm=40, norm_type=2),
-    optimizer=dict(lr=0.01, momentum=0.9, type='SGD', weight_decay=0.0001))
+    optimizer=dict(lr=0.001, momentum=0.9, type='SGD', weight_decay=0.0001))
+
 param_scheduler = [
     dict(
-        begin=0,
-        by_epoch=True,
-        end=100,
-        gamma=0.1,
-        milestones=[
-            40,
-            80,
+        begin=0, 
+        by_epoch=True, 
+        end=10,
+        gamma=0.1, 
+        milestones=[ 
+            4,
+            8,
         ],
         type='MultiStepLR'),
 ]
-resume = False
+
+resume = False  # Và ở đây
+
+# Phần dưới này là test hiện đang để chung với val chưa có đủ dataset
+BATCH_SIZE = 2
+
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
-    batch_size=1,
+    batch_size=BATCH_SIZE,
     dataset=dict(
-        ann_file='data/kinetics400/kinetics400_val_list_videos.txt',
-        data_prefix=dict(video='data/kinetics400/videos_val'),
+        ann_file='data/malgo/malgo_val_video.txt',
+        data_prefix=dict(video='data/malgo/val'),
         pipeline=[
             dict(io_backend='disk', type='DecordInit'),
             dict(
@@ -95,7 +106,7 @@ test_dataloader = dict(
         ],
         test_mode=True,
         type='VideoDataset'),
-    num_workers=8,
+    num_workers=1,
     persistent_workers=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(type='AccMetric')
@@ -117,13 +128,13 @@ test_pipeline = [
     dict(type='PackActionInputs'),
 ]
 
-train_cfg = dict(
-    max_epochs=100, type='EpochBasedTrainLoop', val_begin=1, val_interval=1)
+
+train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=10, val_interval=1)
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=BATCH_SIZE,
     dataset=dict(
-        ann_file='data/kinetics400/kinetics400_train_list_videos.txt',
-        data_prefix=dict(video='data/kinetics400/videos_train'),
+        ann_file='data/malgo/malgo_train_video.txt',
+        data_prefix=dict(video='data/malgo/train'),
         pipeline=[
             dict(io_backend='disk', type='DecordInit'),
             dict(
@@ -154,7 +165,7 @@ train_dataloader = dict(
             dict(type='PackActionInputs'),
         ],
         type='VideoDataset'),
-    num_workers=8,
+    num_workers=1,
     persistent_workers=True,
     sampler=dict(shuffle=True, type='DefaultSampler'))
 
@@ -188,10 +199,10 @@ train_pipeline = [
 
 val_cfg = dict(type='ValLoop')
 val_dataloader = dict(
-    batch_size=32,
+    batch_size=BATCH_SIZE,
     dataset=dict(
-        ann_file='data/kinetics400/kinetics400_val_list_videos.txt',
-        data_prefix=dict(video='data/kinetics400/videos_val'),
+        ann_file='data/malgo/malgo_val_video.txt',
+        data_prefix=dict(video='data/malgo/val'),
         pipeline=[
             dict(io_backend='disk', type='DecordInit'),
             dict(
@@ -211,7 +222,7 @@ val_dataloader = dict(
         ],
         test_mode=True,
         type='VideoDataset'),
-    num_workers=8,
+    num_workers=1,
     persistent_workers=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 val_evaluator = dict(type='AccMetric')
@@ -235,6 +246,7 @@ val_pipeline = [
 vis_backends = [
     dict(type='LocalVisBackend'),
 ]
+
 visualizer = dict(
     type='ActionVisualizer', vis_backends=[
         dict(type='LocalVisBackend'),

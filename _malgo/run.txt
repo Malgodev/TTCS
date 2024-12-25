@@ -1,0 +1,28 @@
+_malgo\custom_framework\tsn_malgo-pretrained-t18.py
+
+data/malgo/train/B_A-1_2.mp4
+
+run this for result:
+python demo/demo.py work_dirs/tsn_malgo-pretrained-t18/tsn_malgo-pretrained-t18.py work_dirs/tsn_malgo-pretrained-t18/best_acc_top1_epoch_9.pth data/malgo/train/B2_A-2_0.mp4 data/malgo/malgo_label.txt
+
+python demo/demo.py work_dirs/tsn_malgo-pretrained-t18/tsn_malgo-pretrained-t18.py work_dirs/tsn_malgo-pretrained-t18/best_acc_top1_epoch_9.pth data/Raw/YT_J_0.mp4 data/malgo/malgo_label.txt
+
+
+visualizations the input:
+python tools/visualizations/browse_dataset.py work_dirs/tsn_malgo-pretrained-t18/tsn_malgo-pretrained-t18.py browse_out --mode pipeline
+
+showing learning curve:
+python tools/visualizations/vis_scheduler.py work_dirs/tsn_malgo-pretrained-t18/tsn_malgo-pretrained-t18.py
+
+also showing result
+python demo/demo_inferencer.py data/malgo/train/B_A-1_1.mp4 --rec work_dirs/tsn_malgo-pretrained-t18/tsn_malgo-pretrained-t18.py --print-result --label-file data/malgo/malgo_label.txt
+
+training
+python tools/train.py _malgo/malgo/tsn_malgo-pretrained-t18.py
+
+python demo/webcam_demo.py work_dirs/tsn_malgo-pretrained-t18/tsn_malgo-pretrained-t18.py work_dirs/tsn_malgo-pretrained-t18/best_acc_top1_epoch_9.pth data/malgo/malgo_label.txt --average-size 5 --threshold 0.25
+python _malgo/malgo/webcam.py work_dirs/tsn_malgo-pretrained-t18/tsn_malgo-pretrained-t18.py work_dirs/tsn_malgo-pretrained-t18/best_acc_top1_epoch_9.pth data/malgo/malgo_label.txt --average-size 5 --threshold 0.25
+python _malgo/malgo/webcam.py work_dirs/tsn_malgo-pretrained-t18/tsn_malgo-pretrained-t18.py work_dirs/tsn_malgo-pretrained-t18/best_acc_top1_epoch_9.pth data/malgo/malgo_label.txt --average-size 5 --threshold 0.25
+
+python _malgo/malgo/webcam.py --rec work_dirs/tsn_malgo-pretrained-t18/tsn_malgo-pretrained-t18.py --rec-weigths work_dirs/tsn_malgo-pretrained-t18/best_acc_top1_epoch_9.pth --label-file data/malgo/malgo_label.txt --average-size 5 --threshold 0.25
+python _malgo/malgo/webcam.py --rec my_model --device cuda:0 --rec-weights path/to/weights --label-file labels.txt
